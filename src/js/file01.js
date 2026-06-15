@@ -1,4 +1,5 @@
 import { fetchProducts } from "./functions";
+import { fetchCategories } from './functions';
 
 "use strict";
 
@@ -44,6 +45,42 @@ container.innerHTML += productHTML
 
 }
 
+const renderCategories = async () => {
+    try {
+        let result = await fetchCategories(
+            'https://data-dawm.github.io/datum/reseller/categories.xml'
+        );
+
+        if (result.success) {
+            let container = document.getElementById('categories');
+
+            container.innerHTML =
+                '<option selected disabled>Seleccione una categoría</option>';
+
+            let categoriesXML = result.body;
+            let categories = categoriesXML.getElementsByTagName('category');
+
+            for (let category of categories) {
+                let categoryHTML =
+                    '<option value="[ID]">[NAME]</option>';
+
+                let idNode = category.getElementsByTagName('id')[0];
+                let nameNode = category.getElementsByTagName('name')[0];
+
+                let id = idNode ? idNode.textContent : '';
+                let name = nameNode ? nameNode.textContent : '';
+
+                categoryHTML = categoryHTML.replace('[ID]', id);
+                categoryHTML = categoryHTML.replace('[NAME]', name);
+
+                container.innerHTML += categoryHTML;
+            }
+        }
+    } catch (error) {
+        console.error(error);
+    }
+};
+
 
 /**
 * Muestra el elemento de notificación interactiva (Toast) en la interfaz de usuario
@@ -77,4 +114,5 @@ window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank");
 showToast();
 showVideo();
 renderPoducts();
+renderCategories();
 })();
